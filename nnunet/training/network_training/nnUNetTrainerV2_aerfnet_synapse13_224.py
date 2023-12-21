@@ -39,7 +39,7 @@ from tqdm import tqdm
 import yaml
 from nnunet.network_configuration.config import CONFIGS
 
-class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
+class nnUNetTrainerV2_aerfnet_synapse13_224(nnUNetTrainer):
     """
     Info for Fabian: same as internal nnUNetTrainerV2_2
     """
@@ -49,7 +49,7 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
                          deterministic, fp16)
 
-        config = CONFIGS['Synapse13_320']
+        config = CONFIGS['Synapse13_224']
         self.config = config
         self.max_num_epochs = config.hyper_parameter.epochs_num
         self.initial_lr = config.hyper_parameter.base_learning_rate

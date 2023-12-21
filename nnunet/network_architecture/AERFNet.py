@@ -689,34 +689,11 @@ class decoder(nn.Module):
         #self.ppa = PyramidPoolAgg(stride=2)
         depths = 4
         dpr = [x.item() for x in torch.linspace(0, drop_path_rate, depths)]  # stochastic depth decay rule
-        '''
-        self.trans = TransBasicLayer(
-            block_num=depths,
-            embedding_dim=sum(self.channels),
-            key_dim=16,
-            num_heads=8,
-            mlp_ratio=2,
-            attn_ratio=2,
-            drop=0, attn_drop=0,
-            drop_path=dpr,
-            act_layer=nn.ReLU6)
-        '''
-        #self.merge1 = InjectionMultiSumCBR(embed_dim*2**0, embed_dim*2**0)
-        #self.merge2 = InjectionMultiSumCBR(embed_dim*2**1, embed_dim*2**1)
-        #self.merge3 = InjectionMultiSumCBR(embed_dim*2**2, embed_dim*2**2)
+
 
     def forward(self, x, skips):
-        #out = self.ppa(skips[:3])
-        #out = self.trans(out)
-        #out = out.split(self.channels, dim=1)
 
         outs = []
-        # edec1 = self.edecoder1(skips[0], skips[0].size(2), skips[0].size(3))[0]
-        # edec2 = self.edecoder2(skips[1], skips[1].size(2), skips[1].size(3))[0]
-        # edec3 = self.edecoder3(skips[2], skips[2].size(2), skips[2].size(3))[0]
-        #edec1 = self.merge1(skips[0], out[0])
-        #edec2 = self.merge2(skips[1], out[1])
-        #edec3 = self.merge3(skips[2], out[2])
 
         H, W = x.size(2), x.size(3)
         x = self.pos_drop(x)

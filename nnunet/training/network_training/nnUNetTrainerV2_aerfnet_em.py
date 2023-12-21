@@ -39,7 +39,7 @@ from tqdm import tqdm
 import yaml
 from nnunet.network_configuration.config import CONFIGS
 
-class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
+class nnUNetTrainerV2_aerfnet_em(nnUNetTrainer):
     """
     Info for Fabian: same as internal nnUNetTrainerV2_2
     """
@@ -49,7 +49,7 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
         super().__init__(plans_file, fold, output_folder, dataset_directory, batch_dice, stage, unpack_data,
                          deterministic, fp16)
 
-        config = CONFIGS['Synapse13_320']
+        config = CONFIGS['EM_512']
         self.config = config
         self.max_num_epochs = config.hyper_parameter.epochs_num
         self.initial_lr = config.hyper_parameter.base_learning_rate
@@ -85,7 +85,7 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
             self.num_heads = [6,12,24,48]
             if self.pretrain:
                 self.pre_trained_weight = torch.load("/group/program/aerfnet/our_weight/imagenet_large.model",map_location='cpu')
-
+       
     def initialize(self, training=True, force_load_plans=False):
         """
         - replaced get_default_augmentation with get_moreDA_augmentation
@@ -156,6 +156,7 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
         self.was_initialized = True
 
     def initialize_network(self):
+        
         # Don't touch conv_op
         self.network = AERFNet(self.config, 
                                 self.num_input_channels, 
@@ -163,17 +164,23 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
                                 self.num_heads, 
                                 self.num_classes, 
                                 self.Deep_supervision, 
-                                conv_op=nn.Conv2d)   
-
+                                conv_op=nn.Conv2d)    
+       
         if self.pretrain:
-            checkpoint=self.pre_trained_weight["state_dict"]
-            
-            self.network.load_state_dict(checkpoint, strict=True)
+            checkpoint=self.pre_trained_weight
+            ck={}
+            for i in self.network.state_dict():
+                if i.replace('decoder','encoder') in checkpoint: #there is a mistake in the name of the key of the pretrained model
+                    # if the key in the pre-trained model is the same with ours model, we load it. If not, we initialize it randomly.
+                    # so it's necessary to check the key of the pre-trained model and ours
+                    print(i)
+                    ck.update({i:checkpoint[i.replace('decoder','encoder')]})
+                else:
+                    ck.update({i:self.network.state_dict()[i]})
+            print('Successfully load the weight above!')
+            self.network.load_state_dict(ck)
             print('I am using the pre_trained weight!!') 
- 
         
-        total = sum(p.numel() for p in self.network.parameters() if p.requires_grad)
-        print("Total params: %.2fM" % (total/1e6))
         if torch.cuda.is_available():
             self.network.cuda()
         self.network.inference_apply_nonlin = softmax_helper
@@ -298,8 +305,8 @@ class nnUNetTrainerV2_aerfnet_synapse13_320(nnUNetTrainer):
         #print(self.dataset.keys())
         #print(self.train_list)
         #print(self.val_list)
-        tr_keys = [i for i in self.dataset.keys() if i.split('_')[0] in self.train_list]
-        val_keys = [i for i in self.dataset.keys() if i.split('_')[0] in self.val_list]
+        tr_keys = self.train_list
+        val_keys = self.val_list
         self.print_to_log_file("This split has %d training and %d validation cases."
                                        % (len(tr_keys), len(val_keys)))
         tr_keys.sort()

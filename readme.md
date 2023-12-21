@@ -1,6 +1,6 @@
 # Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation
 
-This repository is the official implementation of **Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation**. We provide the code which contains data preprocessing, training, and testing. Specifically,  we test all **13 organs** in the Synapse dataset instead of 8 organs, which is typically reported in previous works. Our implementation refers to the implementation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet). 
+This repository is the official implementation of **Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation, ICASSP2024**. We test all **13 organs** in the Synapse dataset instead of 8 organs, which is typically reported in previous works. Our implementation refers to the implementation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet) and [UNet-2022](https://github.com/282857341/UNet-2022). 
 
 # Table of contents  
 - [Installation](#Installation) 
@@ -17,7 +17,7 @@ source activate AERFNet
 pip install -e .
 ```
 # Data_Preparation
-Our proposed model is a 2D based network, and all data should be expressed in 2D form with ```.nii.gz``` format. You can download the organized dataset from the [link](https://drive.google.com/drive/folders/1b4IVd9pOCFwpwoqfnVpsKZ6b3vfBNL6x?usp=sharing) or download the original data from the link below. If you need to convert other formats (such as ```.jpg```) to the ```.nii.gz```, you can look up the file and modify the [file](https://github.com/282857341/UNet-2022/blob/master/nnunet/dataset_conversion/Task120_ISIC.py) based on your own datasets.
+Following [UNet-2022](https://github.com/282857341/UNet-2022), our proposed model is a 2D based network, and all data should be expressed in 2D form with ```.nii.gz``` format. You can download the organized dataset from the [link](https://drive.google.com/drive/folders/1b4IVd9pOCFwpwoqfnVpsKZ6b3vfBNL6x?usp=sharing) or download the original data from the link below. If you need to convert other formats (such as ```.jpg```) to the ```.nii.gz```, you can look up the file and modify the [file](https://github.com/282857341/UNet-2022/blob/master/nnunet/dataset_conversion/Task120_ISIC.py) based on your own datasets.
 
 **Dataset I**
 [ACDC dataset](https://www.creatis.insa-lyon.fr/Challenge/acdc/) consists of 100 MRI scans. For each sample, the myocardium (MYO), right ventricle (RV), and left ventricle (LV) are labeled for segmentation. In our experiment, we set the ratio of training, validation and testing to 7:1:2.
@@ -30,18 +30,10 @@ Our proposed model is a 2D based network, and all data should be expressed in 2D
 
 The dataset should be finally organized as follows:
 ```
-./DATASET/
+./nnUNet_data/
   ├── nnUNet_raw/
       ├── nnUNet_raw_data/
-          ├── Task01_ACDC/
-              ├── imagesTr/
-              ├── imagesTs/
-              ├── labelsTr/
-              ├── labelsTs/
-              ├── dataset.json
-              ├── evaulate.py
-
-          ├── Task02_Synapse/
+          ├── Task05_Synapse13/
               ├── imagesTr/
               ├── imagesTs/
               ├── labelsTr/
@@ -50,13 +42,10 @@ The dataset should be finally organized as follows:
               ├── evaulate.py              
           ......
       ├── nnUNet_cropped_data/
-  ├── nnUNet_trained_models/
   ├── nnUNet_preprocessed/
+      ├── Task005_Synapse13/
+  ├── nnUNet_trained_models/
 ```
-One thing you should be careful of is that folder imagesTr contains both the training set and validation set, and correspondingly, the value of ```numTraining``` in dataset.json equals the case number in the imagesTr. The division of the training set and validation set will be done in the network configuration located at ```nnunet/network_configuration/config.py```.
-
-The evaulate.py is used for calculating the evaluation metrics and can be found in the [link](https://drive.google.com/drive/folders/1b4IVd9pOCFwpwoqfnVpsKZ6b3vfBNL6x?usp=sharing) of the organized datasets, including testing segmentation performance on all 13 organs on Synapse dataset. The existence of evaulate.py will not affect the data preprocessing, training, and testing.
-
 # Data_Preprocessing
 ```
 nnUNet_convert_decathlon_task -i path/to/nnUNet_raw_data/Task01_ACDC
@@ -66,7 +55,10 @@ This step will convert the name of folder from Task01 to Task001, and make the n
 nnUNet_plan_and_preprocess -t 1
 ```
 Where ```-t 1``` means the command will preprocess the data of the Task001_ACDC.
-Before this step, you should set the environment variables to ensure the framework could know the path of ```nnUNet_raw```, ```nnUNet_preprocessed```, and ```nnUNet_trained_models```. The detailed construction can be found in [nnUNet](https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/setting_up_paths.md)
+Before this step, you should set the environment variables to ensure the framework could know the path of ```nnUNet_raw```, ```nnUNet_preprocessed```, and ```nnUNet_trained_models```. 
+The detailed construction can be found in [UNet-2022](https://github.com/282857341/UNet-2022) and [nnUNet](https://github.com/MIC-DKFZ/nnUNet/blob/master/documentation/setting_up_paths.md)
+
+You can download the processed Synapse dataset (13 organs) from the Baidu Cloud [link](https://pan.baidu.com/s/1tGjMERRhxyCTeZAaEZgGIw), password: v8xg.
 
 # Training_and_Testing
 ```
@@ -80,10 +72,6 @@ bash train_or_test.sh -c 0 -n aerfnet_synapse13_320 -i 5 -s 0.2 -t true -p true
 - ```-p true/false``` determines whether to run the testing command.
 
 The above command will run the training command and testing command continuously.
-
-You can download the pre-trained weight based on ImageNet or our model weights from this [link](https://drive.google.com/drive/folders/1F9HnLCzWGqoC4BIQ-pDDlnWkmP9Y98Bj?usp=sharing). 
-
-Before you start the training, please download the pre-trained weight and adjust the path to it in the trainer that located at ```nnunet/training/network_training```.
 
 Before you start the testing, please make sure the model_best.model and model_best.model.pkl exists in the specified path, like this:
 ```
@@ -107,30 +95,18 @@ Results on **Synapse dataset** on **all 13 organs**. (Spleen, Right/Left Kidney,
 | [nnFormer](https://arxiv.org/abs/1409.1556)  | 3D                            | 80.24                                | 16.27                  | 88.79                 | 84.90                 | 83.23                 | 65.90                |**79.94**         | 95.80                | *84.34*      | 89.97                | 84.07                  | 72.83                  | **78.83**       | 62.97                | **71.54**    |
 | **Ours**                     | 2D                            | **82.13**                       | **10.89**         | **91.26**        | **87.81**        | **89.74**        | *66.19*    | *77.97*      | **96.48**       | **86.64**         | **91.87**       | **87.01**         | **77.76**         | 76.07                | *69.03*    | *69.89* |
 
-Results on **ACDC dataset** (LV: left ventricle, RV: right ventricle, and MYO: myocardium.)
-| **Methods**             | **mIoU**       |
-| ----------------- | ----------- |
-| [UNet](https://arxiv.org/abs/1409.1556)              | 88.30      |
-| [Wide UNet](https://arxiv.org/abs/1512.03385)          | 88.37      |
-| [UNet+](https://arxiv.org/abs/1512.03385)          | 88.89      |
-| [UNet++](https://arxiv.org/abs/1512.03385)         | 89.33      |
-| [nnUNet](https://arxiv.org/abs/2003.13678)     | 90.55      |
-| [DeSFiR](https://arxiv.org/abs/2003.13678)     | 90.92      |
-| [UNet-2022](https://arxiv.org/abs/1801.04381)       | 91.05      |
-| [FANet](https://arxiv.org/abs/1611.05431)  | 91.34      |
-| [**Ours**](https://arxiv.org/abs/1611.05431)  | **92.14**      |
 
+## Reference
+* [nnUNet](https://github.com/MIC-DKFZ/nnUNet)
+* [UNet-2022](https://github.com/282857341/UNet-2022) 
+* [UNeXt](https://github.com/jeya-maria-jose/UNeXt-pytorch)
+## Citations
 
-Results on **EM dataset**
-| **Methods**             | **mIoU**       |
-| ----------------- | ----------- |
-| [UNet](https://arxiv.org/abs/1505.04597)              | 88.30      |
-| [Wide UNet](https://arxiv.org/abs/2102.06442)          | 88.37      |
-| [UNet+](https://arxiv.org/abs/1512.03385)          | 88.89      |
-| [UNet++](https://arxiv.org/abs/1912.05074)         | 89.33      |
-| [nnUNet](https://arxiv.org/abs/1809.10486)     | 90.55      |
-| [DeSFiR](https://arxiv.org/abs/2109.05676)     | 90.92      |
-| [UNet-2022](https://arxiv.org/abs/2210.15566)       | 91.05      |
-| [FANet](https://arxiv.org/abs/2103.17235)  | 91.34      |
-| **Ours**  | **92.14**      |
-
+```bibtex
+@article{qi2024,
+  title={Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation},
+  author={},
+  journal={},
+  year={2024}
+}
+```
