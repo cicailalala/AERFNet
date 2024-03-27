@@ -1,6 +1,6 @@
 # Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation
 
-This repository is the official implementation of **Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation, ICASSP2024**. We test all **13 organs** in the Synapse dataset instead of 8 organs, which is typically reported in previous works. Our implementation refers to the implementation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet) and [UNet-2022](https://github.com/282857341/UNet-2022). 
+This repository is the official implementation of **[Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation](https://ieeexplore.ieee.org/document/10445854), ICASSP2024**. We test all **13 organs** in the Synapse dataset instead of 8 organs, which is typically reported in previous works. Our implementation refers to the implementation of [nnUNet](https://github.com/MIC-DKFZ/nnUNet) and [UNet-2022](https://github.com/282857341/UNet-2022). 
 
 # Table of contents  
 - [Installation](#Installation) 
