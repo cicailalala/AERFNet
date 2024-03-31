@@ -103,14 +103,12 @@ Results on **Synapse dataset** on **all 13 organs**. (Spleen, Right/Left Kidney,
 ## Citations
 
 ```bibtex
-@INPROCEEDINGS{10445854,
-  author={Qi, Wenbo and Zhou, Wenyong and Wong, Ngai and Chan, S. C.},
-  booktitle={ICASSP 2024 - 2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)}, 
-  title={Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation}, 
+@inproceedings{qi2024hybrid,
+  title={Hybrid Module with Multiple Receptive Fields and Self-Attention Layers for Medical Image Segmentation},
+  author={Qi, Wenbo and Zhou, Wenyong and Wong, Ngai and Chan, SC},
+  booktitle={ICASSP 2024-2024 IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)},
+  pages={1906--1910},
   year={2024},
-  volume={},
-  number={},
-  pages={1906-1910},
-  keywords={Convolutional codes;Solid modeling;Image segmentation;Three-dimensional displays;Convolution;Shape;Biomedical imaging;Medical Image Segmentation;Hybrid Module;Adaptive Effective Receptive Fields},
-  doi={10.1109/ICASSP48485.2024.10445854}}
+  organization={IEEE}
+}
 ```
